@@ -13,6 +13,9 @@ export const DEFAULT_MODEL = "deepseek-ai/deepseek-v4-pro";
 export const MODELS = [
   { id: "deepseek-ai/deepseek-v4-pro", label: "deepseek-v4-pro", persona: 1 },
   { id: "z-ai/glm-5.1", label: "glm-5.1", persona: 2 },
+  { id: "nvidia/nemotron-3-super-120b-a12b", label: "nemotron-3-super", persona: 2 },
+  { id: "minimaxai/minimax-m2.5", label: "minimax-m2.5", persona: 2 },
+  { id: "stepfun-ai/step-3.5-flash", label: "step-3.5-flash", persona: 2 },
   { id: "openai/gpt-oss-120b", label: "gpt-oss-120b", persona: 3 },
 ];
 
