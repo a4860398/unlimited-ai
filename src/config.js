@@ -12,6 +12,7 @@ export const DEFAULT_MODEL = "deepseek-ai/deepseek-v4-pro";
 // 模型列表
 export const MODELS = [
   { id: "google/gemma-3-27b-it", label: "gemma-3-27b-it", persona: 1 },
+  { id: "google/gemma-4-31b-it", label: "gemma-4-31b-it", persona: 1 },
   { id: "z-ai/glm-5.1", label: "glm-5.1", persona: 2 },
   { id: "z-ai/glm4.7", label: "glm4.7", persona: 2 },
   { id: "z-ai/glm5", label: "glm5", persona: 2 },
