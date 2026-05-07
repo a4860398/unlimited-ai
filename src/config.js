@@ -26,7 +26,7 @@ export const MODELS = [
   { id: "google/gemma-3-12b-it", label: "gemma-3-12b-it", persona: 1 },
   { id: "google/gemma-3n-e4b-it", label: "gemma-3n-e4b-it", persona: 1 },
   { id: "moonshotai/kimi-k2-instruct", label: "kimi-k2", persona: 1 },
-  { id: "minimaxai/minimax-m2.5", label: "minimax-m2.5", persona: 1 },
+  { id: "moonshotai/kimi-k2-thinking", label: "kimi-k2-thinking", persona: 1 },
   { id: "mistralai/mistral-small-4-119b-2603", label: "mistral-small-4", persona: 1 },
   { id: "openai/gpt-oss-120b", label: "gpt-oss-120b", persona: 3 },
 ];
