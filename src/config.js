@@ -9,7 +9,7 @@ export const CHAT_PASSWORD = "123456";
 // 默认模型
 export const DEFAULT_MODEL = "deepseek-ai/deepseek-v4-pro";
 
-// 模型列表
+// 模型列表（已删除GLM系列，填入全部推荐搞色色的模型）
 export const MODELS = [
   { id: "deepseek-ai/deepseek-v4-pro", label: "deepseek-v4-pro", persona: 1 },
   { id: "deepseek-ai/deepseek-v4-flash", label: "deepseek-v4-flash", persona: 1 },
