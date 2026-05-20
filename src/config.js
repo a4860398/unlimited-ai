@@ -26,7 +26,7 @@ export const MODELS = [
   { id: "moonshotai/kimi-k2-instruct", label: "kimi-k2", persona: 1 },
   { id: "moonshotai/kimi-k2.6", label: "kimi-k2.6", persona: 1 },
   { id: "mistralai/mistral-small-4-119b-2603", label: "mistral-small-4", persona: 1 },
-  { id: "deepseek-ai/deepseek-v3.2", label: "DeepSeek V3.2 (稳定备用)", persona: 1 },
+  { id: "deepseek-ai/deepseek-v3.1-terminus", label: "DeepSeek V3.1 (稳定备用)", persona: 1 },
 ];
 
 // ==================== Persona 1（通用 - DeepSeek / Llama / Gemma 等）====================
