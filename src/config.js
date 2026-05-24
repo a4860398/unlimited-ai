@@ -18,7 +18,7 @@ export const MODELS = [
   { id: "z-ai/glm-5.1", label: "glm-5.1", persona: 2 },
   { id: "meta/llama-3.1-70b-instruct", label: "llama-3.1-70b", persona: 1 },
   { id: "meta/llama-3.2-90b-vision-instruct", label: "llama-3.2-90b-vision", persona: 1 },
-  { id: "meta/llama-3.1-8b-instruct", label: "llama-3.1-8b", persona: 1 },
+  { id: "nvidia/nemotron-3-super-120b-a12b", label: "Nemotron 3 Super", persona: 1 },
   { id: "meta/llama-3.2-11b-vision-instruct", label: "llama-3.2-11b-vision", persona: 1 },
   { id: "google/gemma-4-31b-it", label: "gemma-4-31b-it", persona: 1 },
   { id: "google/gemma-3-12b-it", label: "gemma-3-12b-it", persona: 1 },
