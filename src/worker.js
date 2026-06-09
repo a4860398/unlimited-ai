@@ -49,8 +49,29 @@ async function handleChat(request, env) {
   }
 
   const requestedModel = payload?.model;
-  const model = isAllowedModel(requestedModel) ? requestedModel : DEFAULT_MODEL;
+  // 从 MODELS 中找到对应的模型配置
+  const modelConfig = MODELS.find(m => m.id === requestedModel);
+  const model = modelConfig ? requestedModel : DEFAULT_MODEL;
+  const platform = modelConfig?.platform || 'nvidia'; // 默认走 NVIDIA
 
+  // 提取真实模型名（去掉 nvidia/ 或 deepseek/ 前缀）
+  const realModelName = model.includes('/') ? model.split('/').slice(1).join('/') : model;
+
+  // 根据平台选择 API Key 和 Base URL
+  let apiKey, baseUrl;
+  if (platform === 'deepseek') {
+    apiKey = env.DEEPSEEK_API_KEY;
+    baseUrl = env.OPENAI_BASE_URL || 'https://api.deepseek.com';
+  } else {
+    apiKey = env.NVIDIA_API_KEY;
+    baseUrl = 'https://integrate.api.nvidia.com/v1';
+  }
+
+  if (!apiKey) {
+    return resp("Missing API Key for selected model.", "text/plain; charset=utf-8", 500);
+  }
+
+  // ... 系统提示词构建部分保持不变（和之前一样）
   const useBuiltinPersona = payload?.use_builtin_persona !== false;
   const customSystemPrompt =
     typeof payload?.custom_system_prompt === "string"
@@ -75,29 +96,21 @@ async function handleChat(request, env) {
   for (const msg of messages) {
     if (!msg || typeof msg !== "object") continue;
     if (msg.role !== "user" && msg.role !== "assistant") continue;
-
     upstreamMessages.push({
       role: msg.role,
       content: typeof msg.content === "string" ? msg.content : ""
     });
   }
 
-  if (!env.NVIDIA_API_KEY) {
-    return resp(
-      "Missing NVIDIA_API_KEY (please set it with wrangler secret).",
-      "text/plain; charset=utf-8",
-      500
-    );
-  }
-
-  const upstream = await fetch("https://integrate.api.nvidia.com/v1/chat/completions", {
+  // 调用 API，使用动态的 apiKey 和 baseUrl
+  const upstream = await fetch(`${baseUrl}/chat/completions`, {
     method: "POST",
     headers: {
-      "Authorization": `Bearer ${env.NVIDIA_API_KEY}`,
+      "Authorization": `Bearer ${apiKey}`,
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
-      model,
+      model: realModelName,  // 注意这里用真实模型名
       stream: true,
       stream_options: { include_usage: true },
       messages: upstreamMessages
