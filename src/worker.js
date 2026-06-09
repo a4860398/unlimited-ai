@@ -219,4 +219,53 @@ export default {
       500
     );
   }
+}; 
+
+export default {
+  async fetch(request, env) {
+     // ========== 密码保护开始 ==========
+    const BASIC_USER = env.BASIC_USER;
+    const BASIC_PASS = env.BASIC_PASS;
+    if (!BASIC_USER || !BASIC_PASS) {
+      return new Response('Server config error', { status: 500 });
+    }
+
+    const authHeader = request.headers.get('Authorization');
+    if (!authHeader || !authHeader.startsWith('Basic ')) {
+      return new Response('Unauthorized', {
+        status: 401,
+        headers: {
+          'WWW-Authenticate': 'Basic realm="AI Chat Site"'
+        }
+      });
+    }
+
+    const encodedCredentials = authHeader.split(' ')[1];
+    const decodedCredentials = atob(encodedCredentials);
+    const [providedUser, providedPass] = decodedCredentials.split(':');
+
+    if (providedUser !== BASIC_USER || providedPass !== BASIC_PASS) {
+      return new Response('Unauthorized', { status: 401 });
+    }
+    // ========== 密码保护结束 ==========
+    const url = new URL(request.url);
+
+    if (request.method === "GET" && url.pathname === "/config.js") {
+      return resp(clientConfigJs(), "text/javascript; charset=utf-8");
+    }
+
+    if (request.method === "POST" && url.pathname === "/api/chat") {
+      return handleChat(request, env);
+    }
+
+    if (env.ASSETS && typeof env.ASSETS.fetch === "function") {
+      return env.ASSETS.fetch(request);
+    }
+
+    return resp(
+      "Static assets binding 'ASSETS' is missing. Please configure [assets] in wrangler.toml.",
+      "text/plain; charset=utf-8",
+      500
+    );
+  }
 };
