@@ -7,26 +7,20 @@ export const CHAT_PASSWORD = "123456";
 export const DEFAULT_MODEL = "deepseek-ai/deepseek-v4-pro";
 
 // 模型列表（已完整恢复所有模型）
+// src/config.js 中的 MODELS 数组
 export const MODELS = [
-  { id: "deepseek-ai/deepseek-v4-pro", label: "deepseek-v4-pro", persona: 1, platform: "nvidia" },
-  { id: "deepseek-ai/deepseek-v4-flash", label: "deepseek-v4-flash", persona: 1, platform: "nvidia" },
-  { id: "qwen/qwen3-coder-480b-a35b-instruct", label: "qwen3-coder-480b", persona: 2, platform: "nvidia" },
-  { id: "qwen/qwen3-next-80b-a3b-instruct", label: "qwen3-next-80b", persona: 2, platform: "nvidia" },
-  { id: "qwen/qwen3-next-80b-a3b-thinking", label: "qwen3-next-thinking", persona: 2, platform: "nvidia" },
-  { id: "qwen/qwen3.5-122b-a10b", label: "qwen3.5-122b", persona: 2, platform: "nvidia" },
-  { id: "qwen/qwen2.5-coder-32b-instruct", label: "qwen2.5-coder-32b", persona: 2, platform: "nvidia" },
-  { id: "z-ai/glm-5.1", label: "glm-5.1", persona: 2, platform: "nvidia" },
-  { id: "meta/llama-3.1-70b-instruct", label: "llama-3.1-70b", persona: 1, platform: "nvidia" },
-  { id: "meta/llama-3.2-90b-vision-instruct", label: "llama-3.2-90b-vision", persona: 1, platform: "nvidia" },
-  { id: "nvidia/nemotron-3-super-120b-a12b", label: "Nemotron 3 Super", persona: 1, platform: "nvidia" },
-  { id: "meta/llama-3.2-11b-vision-instruct", label: "llama-3.2-11b-vision", persona: 1, platform: "nvidia" },
-  { id: "google/gemma-4-31b-it", label: "gemma-4-31b-it", persona: 1, platform: "nvidia" },
-  { id: "google/gemma-3-12b-it", label: "gemma-3-12b-it", persona: 1, platform: "nvidia" },
-  { id: "google/gemma-3n-e4b-it", label: "gemma-3n-e4b-it", persona: 1, platform: "nvidia" },
-  { id: "moonshotai/kimi-k2-instruct", label: "kimi-k2", persona: 1, platform: "nvidia" },
-  { id: "moonshotai/kimi-k2.6", label: "kimi-k2.6", persona: 1, platform: "nvidia" },
-  { id: "mistralai/mistral-small-4-119b-2603", label: "mistral-small-4", persona: 1, platform: "nvidia" },
-   // ========== DeepSeek 官方付费模型 ==========
+  // ========== NVIDIA 免费模型（保持原 ID，platform 设为 nvidia） ==========
+  { id: "deepseek-ai/deepseek-v4-pro", label: "deepseek-v4-pro (NVIDIA)", persona: 1, platform: "nvidia" },
+  { id: "deepseek-ai/deepseek-v4-flash", label: "deepseek-v4-flash (NVIDIA)", persona: 1, platform: "nvidia" },
+  { id: "nvidia/nemotron-3-super-120b-a12b", label: "Nemotron 3 Super (NVIDIA)", persona: 1, platform: "nvidia" },
+  { id: "z-ai/glm-5.1", label: "glm-5.1 (NVIDIA)", persona: 2, platform: "nvidia" },
+  { id: "moonshotai/kimi-k2.6", label: "kimi-k2.6 (NVIDIA)", persona: 1, platform: "nvidia" },
+  { id: "google/gemma-4-31b-it", label: "gemma-4-31b-it (NVIDIA)", persona: 1, platform: "nvidia" },
+  { id: "mistralai/mistral-small-4-119b-2603", label: "mistral-small-4 (NVIDIA)", persona: 1, platform: "nvidia" },
+  { id: "qwen/qwen3.5-122b-a10b", label: "qwen3.5-122b (NVIDIA)", persona: 2, platform: "nvidia" },
+  // ... 你其他 NVIDIA 模型（保持原 ID，platform 都设为 "nvidia"）
+  
+  // ========== DeepSeek 官方付费模型（ID 加 deepseek/ 前缀，platform 设为 deepseek） ==========
   { id: "deepseek/deepseek-v4-flash", label: "DeepSeek V4 Flash (付费·官方)", persona: 1, platform: "deepseek" },
   { id: "deepseek/deepseek-v4-pro", label: "DeepSeek V4 Pro (付费·官方)", persona: 1, platform: "deepseek" },
 ];
