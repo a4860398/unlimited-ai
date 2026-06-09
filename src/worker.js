@@ -55,7 +55,9 @@ async function handleChat(request, env) {
   const platform = modelConfig?.platform || 'nvidia'; // 默认走 NVIDIA
 
   // 提取真实模型名（去掉 nvidia/ 或 deepseek/ 前缀）
-  const realModelName = model.includes('/') ? model.split('/').slice(1).join('/') : model;
+ const realModelName = platform === 'deepseek'
+  ? (model.includes('/') ? model.split('/').slice(1).join('/') : model)
+  : model; // NVIDIA 模型保持完整 ID，不需要去掉前缀
 
   // 根据平台选择 API Key 和 Base URL
   let apiKey, baseUrl;
