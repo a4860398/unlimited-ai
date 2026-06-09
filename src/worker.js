@@ -106,16 +106,18 @@ async function handleChat(request, env) {
 
   // 调用 API，使用动态的 apiKey 和 baseUrl
   const upstream = await fetch(`${baseUrl}/chat/completions`, {
+    signal: AbortSignal.timeout(120000),  // 加长超时时间，防止断流
     method: "POST",
     headers: {
       "Authorization": `Bearer ${apiKey}`,
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
-      model: realModelName,  // 注意这里用真实模型名
+      model: realModelName,
       stream: true,
       stream_options: { include_usage: true },
-      messages: upstreamMessages
+      messages: upstreamMessages,
+      max_tokens: 8192  // 限制单次最大输出长度，防止漏字
     })
   });
 
