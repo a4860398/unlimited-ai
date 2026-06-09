@@ -4,7 +4,7 @@
 export const CHAT_PASSWORD = "123456";
 
 // 默认模型
-export const DEFAULT_MODEL = "deepseek-ai/deepseek-v4-pro";
+export const DEFAULT_MODEL = "deepseek-ai/deepseek-v4-flash"; 
 
 // 模型列表（已完整恢复所有模型）
 // src/config.js 中的 MODELS 数组
