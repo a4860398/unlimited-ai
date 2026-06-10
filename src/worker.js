@@ -49,17 +49,14 @@ async function handleChat(request, env) {
   }
 
   const requestedModel = payload?.model;
-  // 从 MODELS 中找到对应的模型配置
   const modelConfig = MODELS.find(m => m.id === requestedModel);
   const model = modelConfig ? requestedModel : DEFAULT_MODEL;
-  const platform = modelConfig?.platform || 'nvidia'; // 默认走 NVIDIA
+  const platform = modelConfig?.platform || 'nvidia';
 
-  // 提取真实模型名（去掉 nvidia/ 或 deepseek/ 前缀）
- const realModelName = platform === 'deepseek'
-  ? (model.includes('/') ? model.split('/').slice(1).join('/') : model)
-  : model; // NVIDIA 模型保持完整 ID，不需要去掉前缀
+  const realModelName = platform === 'deepseek'
+    ? (model.includes('/') ? model.split('/').slice(1).join('/') : model)
+    : model;
 
-  // 根据平台选择 API Key 和 Base URL
   let apiKey, baseUrl;
   if (platform === 'deepseek') {
     apiKey = env.DEEPSEEK_API_KEY;
@@ -73,7 +70,6 @@ async function handleChat(request, env) {
     return resp("Missing API Key for selected model.", "text/plain; charset=utf-8", 500);
   }
 
-  // ... 系统提示词构建部分保持不变（和之前一样）
   const useBuiltinPersona = payload?.use_builtin_persona !== false;
   const customSystemPrompt =
     typeof payload?.custom_system_prompt === "string"
@@ -104,9 +100,12 @@ async function handleChat(request, env) {
     });
   }
 
-  // 调用 API，使用动态的 apiKey 和 baseUrl
+  // ── 核心改动：非流式获取 → 模拟流式输出 ──
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 180000);
+
   const upstream = await fetch(`${baseUrl}/chat/completions`, {
-    signal: AbortSignal.timeout(120000),  // 加长超时时间，防止断流
+    signal: controller.signal,
     method: "POST",
     headers: {
       "Authorization": `Bearer ${apiKey}`,
@@ -114,12 +113,13 @@ async function handleChat(request, env) {
     },
     body: JSON.stringify({
       model: realModelName,
-      stream: true,
-      stream_options: { include_usage: true },
+      stream: false,  // 关掉流式，要求一次性完整回复
       messages: upstreamMessages,
-      max_tokens: 8192  // 限制单次最大输出长度，防止漏字
+      max_tokens: 8192  // 先小点测试，成功后可以改回 8192 或更大
     })
   });
+
+  clearTimeout(timeoutId);
 
   if (!upstream.ok) {
     const errorText = await upstream.text().catch(() => "");
@@ -130,7 +130,29 @@ async function handleChat(request, env) {
     );
   }
 
-  return new Response(upstream.body, {
+  const data = await upstream.json();
+  const fullText = data.choices?.[0]?.message?.content || "";
+
+  // 把完整文本拆成小块，模拟流式发给前端
+  const encoder = new TextEncoder();
+  let index = 0;
+  const chunkSize = 10; // 每次发10个字
+  const readable = new ReadableStream({
+    async pull(controller) {
+      if (index < fullText.length) {
+        const chunk = fullText.substring(index, index + chunkSize);
+        index += chunkSize;
+        const sseData = `data: ${JSON.stringify({ choices: [{ delta: { content: chunk } }] })}\n\n`;
+        controller.enqueue(encoder.encode(sseData));
+      } else {
+        // 发送结束信号
+        controller.enqueue(encoder.encode("data: [DONE]\n\n"));
+        controller.close();
+      }
+    }
+  });
+
+  return new Response(readable, {
     status: 200,
     headers: {
       "Content-Type": "text/event-stream; charset=utf-8",
