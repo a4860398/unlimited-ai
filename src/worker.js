@@ -115,7 +115,6 @@ async function handleChat(request, env) {
     body: JSON.stringify({
       model: realModelName,
       stream: false,
-      stream_options: { include_usage: true },
       messages: upstreamMessages,
       max_tokens: 8192  // 限制单次最大输出长度，防止漏字
     })
