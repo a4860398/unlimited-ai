@@ -1,18 +1,18 @@
 *{ box-sizing:border-box; }
 
 :root{
-  --bg:#0b0b0b;
-  --border:#222;
-  --muted:#9a9a9a;
+  --bg:#1A1A2E;
+  --border:#2A2A4A;
+  --muted:#8888AA;
 
-  --bubble-ai:#141414;
-  --bubble-user:#1f1f1f;
+  --bubble-ai:#16213E;
+  --bubble-user:#0F3460;
 
-  --input-bg:#2d2d2d;
-  --input-border:#444;
+  --input-bg:#16213E;
+  --input-border:#2A2A4A;
 
-  --btn-bg:#3b3b3b;
-  --btn-bg-hover:#4a4a4a;
+  --btn-bg:#E94560;
+  --btn-bg-hover:#C23152;
 
   --composer-gap:18px;
   --spacer-extra:28px;
