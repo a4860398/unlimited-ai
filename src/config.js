@@ -13,7 +13,7 @@ export const MODELS = [
   { id: "deepseek-ai/deepseek-v4-pro", label: "deepseek-v4-pro (NVIDIA)", persona: 1, platform: "nvidia" },
   { id: "deepseek-ai/deepseek-v4-flash", label: "deepseek-v4-flash (NVIDIA)", persona: 1, platform: "nvidia" },
   { id: "nvidia/nemotron-3-super-120b-a12b", label: "Nemotron 3 Super (NVIDIA)", persona: 1, platform: "nvidia" },
-  { id: "z-ai/glm-5.1", label: "glm-5.1 (NVIDIA)", persona: 2, platform: "nvidia" },
+  { id: "z-ai/glm-5.2", label: "glm-5.2 (NVIDIA)", persona: 1, platform: "nvidia" },
   { id: "moonshotai/kimi-k2.6", label: "kimi-k2.6 (NVIDIA)", persona: 1, platform: "nvidia" },
   { id: "google/gemma-4-31b-it", label: "gemma-4-31b-it (NVIDIA)", persona: 1, platform: "nvidia" },
   { id: "mistralai/mistral-small-4-119b-2603", label: "mistral-small-4 (NVIDIA)", persona: 1, platform: "nvidia" },
