@@ -9,18 +9,17 @@ export const DEFAULT_MODEL = "deepseek-ai/deepseek-v4-flash";
 // 模型列表（已完整恢复所有模型）
 // src/config.js 中的 MODELS 数组
 export const MODELS = [
-  // ========== NVIDIA 免费模型（保持原 ID，platform 设为 nvidia） ==========
-  { id: "deepseek-ai/deepseek-v4-pro", label: "deepseek-v4-pro (NVIDIA)", persona: 1, platform: "nvidia" },
+  // ========== NVIDIA 免费模型 ==========
   { id: "deepseek-ai/deepseek-v4-flash", label: "deepseek-v4-flash (NVIDIA)", persona: 1, platform: "nvidia" },
+  { id: "deepseek-ai/deepseek-v4-pro", label: "deepseek-v4-pro (NVIDIA)", persona: 1, platform: "nvidia" },
   { id: "stepfun/step-3.7-flash", label: "Step 3.7 Flash (NVIDIA)", persona: 1, platform: "nvidia" },
   { id: "z-ai/glm-5.2", label: "glm-5.2 (NVIDIA)", persona: 1, platform: "nvidia" },
   { id: "minimaxai/minimax-m3", label: "MiniMax-M3 (NVIDIA)", persona: 1, platform: "nvidia" },
   { id: "google/gemma-4-31b-it", label: "gemma-4-31b-it (NVIDIA)", persona: 1, platform: "nvidia" },
-  { id: "inkling/inkling", label: "Inkling (NVIDIA)", persona: 1, platform: "nvidia" },
-  { id: "laguna/laguna-xs-2.1", label: "Laguna XS 2.1 (NVIDIA)", persona: 1, platform: "nvidia" }, { id: "laguna/laguna-xs-2.1", label: "Laguna XS 2.1 (NVIDIA)", persona: 1, platform: "nvidia" },
-  // ... 你其他 NVIDIA 模型（保持原 ID，platform 都设为 "nvidia"）
-  
-  // ========== DeepSeek 官方付费模型（ID 加 deepseek/ 前缀，platform 设为 deepseek） ==========
+  { id: "thinkingmachines/inkling", label: "Inkling (NVIDIA)", persona: 1, platform: "nvidia" },
+  { id: "laguna/laguna-xs-2.1", label: "Laguna XS 2.1 (NVIDIA)", persona: 1, platform: "nvidia" },
+
+  // ========== DeepSeek 官方付费模型 ==========
   { id: "deepseek/deepseek-v4-flash", label: "DeepSeek V4 Flash (付费·官方)", persona: 1, platform: "deepseek" },
   { id: "deepseek/deepseek-v4-pro", label: "DeepSeek V4 Pro (付费·官方)", persona: 1, platform: "deepseek" },
 ];
