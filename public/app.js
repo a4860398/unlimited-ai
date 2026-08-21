@@ -116,6 +116,32 @@
     content.appendChild(bubble);
     content.appendChild(stats);
 
+    // ===== 新增：Bot 回复的操作按钮 =====
+    if (role === "assistant") {
+      const controls = document.createElement("div");
+      controls.className = "row-controls";
+
+      const regenBtn = document.createElement("button");
+      regenBtn.className = "mini-btn regen-btn";
+      regenBtn.textContent = "🔄 重新生成";
+      regenBtn.title = "删除这条回复并重新发送上一条消息";
+
+      const delBtn = document.createElement("button");
+      delBtn.className = "mini-btn del-btn";
+      delBtn.textContent = "🗑️ 删除";
+      delBtn.title = "仅删除这条回复";
+
+      controls.appendChild(regenBtn);
+      controls.appendChild(delBtn);
+
+      content.appendChild(controls);
+
+      // 把 session 数组索引绑定到按钮上
+      // 注意：此时 session 中还没有这条 Bot 消息，所以索引在 send 完成后绑定
+      content.__regenBtn = regenBtn;
+      content.__delBtn = delBtn;
+    }
+
     if (role === "user") {
       row.appendChild(content);
       row.appendChild(avatar);
@@ -127,7 +153,7 @@
     chatEl.insertBefore(row, spacerEl);
     if (isNearBottom()) scrollToBottom();
 
-    return { bubble, stats };
+    return { row, bubble, stats, content };
   }
 
   function clearUIRows(){
