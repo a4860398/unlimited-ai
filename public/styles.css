@@ -564,3 +564,36 @@ button#sendBtn:hover{
   background:#E94560;
   border-radius:4px;
 }
+/* ===== 新增：消息操作按钮 ===== */
+.row-controls{
+  display:flex;
+  gap:6px;
+  margin-top:6px;
+  justify-content:flex-end;
+}
+
+.mini-btn{
+  border:1px solid #2a2a2a;
+  background:#141414;
+  color:#aaa;
+  border-radius:10px;
+  padding:4px 10px;
+  cursor:pointer;
+  font-size:12px;
+  transition:.15s;
+}
+
+.mini-btn:hover{
+  background:#1b1b1b;
+  color:#fff;
+}
+
+.regen-btn:hover{
+  border-color:#E94560;
+  color:#E94560;
+}
+
+.del-btn:hover{
+  border-color:#7f1d1d;
+  color:#ff6b6b;
+}
