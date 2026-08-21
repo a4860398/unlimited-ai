@@ -597,3 +597,7 @@ button#sendBtn:hover{
   border-color:#7f1d1d;
   color:#ff6b6b;
 }
+.edit-btn:hover{
+  border-color:#4da3ff;
+  color:#4da3ff;
+}
