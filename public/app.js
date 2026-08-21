@@ -209,42 +209,6 @@ function makeRow(role){
 
       content.appendChild(controls);
 
-      editBtn.addEventListener("click", () => {
-        inputEl.value = bubble.textContent;
-        inputEl.style.height = "auto";
-        inputEl.style.height = inputEl.scrollHeight + "px";
-        inputEl.focus();
-      });
-
-      delBtn.addEventListener("click", () => {
-        const allRows = Array.from(chatEl.children).filter(n => n !== spacerEl);
-        const rowIndex = allRows.indexOf(row);
-        if (rowIndex === -1) return;
-
-        // 删除这条用户消息，以及紧跟其后的所有 AI 回复（直到下一条用户消息）
-        const indexesToRemove = [];
-        for (let i = rowIndex; i < session.length; i++) {
-          if (i > rowIndex && session[i]?.role === "user") break;
-          indexesToRemove.push(i);
-        }
-
-        // 从后往前删 session，避免索引错位
-        for (let i = indexesToRemove.length - 1; i >= 0; i--) {
-          session.splice(indexesToRemove[i], 1);
-        }
-        persistSessionIfEnabled();
-
-        // 从 UI 移除对应行
-        let currentNode = row;
-        while (currentNode) {
-          const next = currentNode.nextElementSibling;
-          // 如果是下一条用户行，停止删除
-          if (next && next.classList.contains("user")) break;
-          currentNode.remove();
-          currentNode = next;
-        }
-      });
-    }
     if (role === "user") {
       row.appendChild(content);
       row.appendChild(avatar);
