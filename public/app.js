@@ -389,7 +389,8 @@
     outEndMs = performance.now();
     session.push({ role: "assistant", content: full });
     persistSessionIfEnabled();
-
+ // 绑定操作按钮到这条 Bot 消息
+    bindBotButtons(aiRow.content, session.length - 1);
     const seconds = Math.max(0.001, (outEndMs - (outStartMs || outEndMs)) / 1000);
 
     if (exactUsage && typeof exactUsage.completion_tokens === "number") {
@@ -424,7 +425,48 @@
       send();
     }
   });
+ // ===== 新增：重新生成 & 删除 =====
+  function removeRowByContent(contentEl){
+    if (!contentEl) return;
+    const row = contentEl.closest(".row");
+    if (row && row.parentNode) row.parentNode.removeChild(row);
+  }
 
+  function regenerateFromBot(botContentEl, botIndex){
+    // 找到这条 Bot 对应的 User 索引（通常是前一条）
+    const userIndex = botIndex - 1;
+    if (userIndex < 0 || session[userIndex]?.role !== "user") {
+      alert("无法找到对应的用户消息，无法重新生成。");
+      return;
+    }
+
+    // 从 session 中移除 Bot 那条
+    session.splice(botIndex, 1);
+    persistSessionIfEnabled();
+
+    // 从页面移除这条 Bot 的 UI
+    removeRowByContent(botContentEl);
+
+    // 重新发送上一条用户消息
+    const userMsg = session[userIndex].content;
+    inputEl.value = userMsg;
+    send();
+  }
+
+  function deleteBot(botContentEl, botIndex){
+    // 从 session 中移除这条 Bot
+    session.splice(botIndex, 1);
+    persistSessionIfEnabled();
+
+    // 从页面移除这条 Bot 的 UI
+    removeRowByContent(botContentEl);
+  }
+
+  function bindBotButtons(contentEl, botIndex){
+    if (!contentEl.__regenBtn || !contentEl.__delBtn) return;
+    contentEl.__regenBtn.addEventListener("click", () => regenerateFromBot(contentEl, botIndex));
+    contentEl.__delBtn.addEventListener("click", () => deleteBot(contentEl, botIndex));
+  }
   function init(){
     initModels();
     setupResizeObserver();
