@@ -37,25 +37,22 @@
   let totalInEstimate = 0;
   let totalOutEstimate = 0;
 
-  // ====== 本地存储 Key（严格分离：历史 vs 自定义模板） ======
   const LS_MODEL = "cfw_model";
-  const LS_USE_BUILTIN = "cfw_use_builtin";      // "1"=😈, "0"=😇
-
+  const LS_USE_BUILTIN = "cfw_use_builtin";
   const LS_HISTORY_ENABLED = "cfw_history_enabled";
   const LS_CHAT_SESSION = "cfw_chat_session_v1";
-
   const LS_PROMPT_ENABLED = "cfw_prompt_enabled";
   const LS_CUSTOM_PROMPT = "cfw_custom_prompt_v1";
 
-    let useBuiltin = (localStorage.getItem(LS_USE_BUILTIN) ?? "1") === "1";
+  let useBuiltin = (localStorage.getItem(LS_USE_BUILTIN) ?? "1") === "1";
   personaToggle.textContent = useBuiltin ? "😈" : "😇";
 
   let historyEnabled = (localStorage.getItem(LS_HISTORY_ENABLED) ?? "0") === "1";
-  let promptEnabled  = (localStorage.getItem(LS_PROMPT_ENABLED) ?? "1") === "1";
+  let promptEnabled = (localStorage.getItem(LS_PROMPT_ENABLED) ?? "1") === "1";
   historyKeepEl.checked = historyEnabled;
   promptKeepEl.checked = promptEnabled;
 
-  function estimateTokens(text){
+  function estimateTokens(text) {
     if (!text) return 0;
     let cjk = 0, ascii = 0;
     for (const ch of text) {
@@ -72,7 +69,7 @@
     return cjk + Math.ceil(ascii / 4);
   }
 
-  function updateSpacer(){
+  function updateSpacer() {
     if (!composerEl || !spacerEl) return;
     const rect = composerEl.getBoundingClientRect();
     const rootStyle = getComputedStyle(document.documentElement);
@@ -83,15 +80,20 @@
     historyWrap.style.scrollPaddingBottom = h + "px";
   }
 
-  function isNearBottom(){
+  function isNearBottom() {
     const threshold = 120;
     return (historyWrap.scrollHeight - historyWrap.scrollTop - historyWrap.clientHeight) < threshold;
   }
-  function scrollToBottom(){
+  function scrollToBottom() {
     historyWrap.scrollTo({ top: historyWrap.scrollHeight, behavior: "auto" });
   }
 
-function makeRow(role){
+  function persistSessionIfEnabled() {
+    if (!historyEnabled) return;
+    try { localStorage.setItem(LS_CHAT_SESSION, JSON.stringify(session)); } catch {}
+  }
+
+  function makeRow(role) {
     const row = document.createElement("div");
     row.className = "row " + (role === "user" ? "user" : "ai");
 
@@ -116,11 +118,10 @@ function makeRow(role){
     content.appendChild(bubble);
     content.appendChild(stats);
 
-    // ===== 新增：Bot 回复的操作按钮 =====
-    if (role === "assistant") {
-      const controls = document.createElement("div");
-      controls.className = "row-controls";
+    const controls = document.createElement("div");
+    controls.className = "row-controls";
 
+    if (role === "assistant") {
       const regenBtn = document.createElement("button");
       regenBtn.className = "mini-btn regen-btn";
       regenBtn.textContent = "🔄 重新生成";
@@ -133,67 +134,10 @@ function makeRow(role){
 
       controls.appendChild(regenBtn);
       controls.appendChild(delBtn);
-
       content.appendChild(controls);
-
-      // 直接在这里绑定事件，无需额外函数
-      regenBtn.addEventListener("click", () => {
-        // 找到这条 Bot 对应的 User 消息索引
-        const botIndex = session.findIndex((m, idx) => {
-          return m.role === "assistant" && row === chatEl.children[idx];
-        });
-
-        if (botIndex === -1) {
-          // 备选：通过 DOM 查找
-          const allRows = Array.from(chatEl.children).filter(n => n !== spacerEl);
-          const rowIndex = allRows.indexOf(row);
-          if (rowIndex !== -1) {
-            const sessionIndex = rowIndex;
-            const userIndex = sessionIndex - 1;
-            if (userIndex >= 0 && session[userIndex]?.role === "user") {
-              session.splice(sessionIndex, 1);
-              row.remove();
-              persistSessionIfEnabled();
-              const userMsg = session[userIndex].content;
-              inputEl.value = userMsg;
-              send();
-            }
-          }
-          return;
-        }
-
-        const userIndex = botIndex - 1;
-        if (userIndex < 0 || session[userIndex]?.role !== "user") {
-          alert("无法找到对应的用户消息，无法重新生成。");
-          return;
-        }
-
-        session.splice(botIndex, 1);
-        row.remove();
-        persistSessionIfEnabled();
-
-        const userMsg = session[userIndex].content;
-        inputEl.value = userMsg;
-        send();
-      });
-
-      delBtn.addEventListener("click", () => {
-        // 直接根据 DOM 位置删除对应 session 条目
-        const allRows = Array.from(chatEl.children).filter(n => n !== spacerEl);
-        const rowIndex = allRows.indexOf(row);
-
-        if (rowIndex !== -1) {
-          session.splice(rowIndex, 1);
-          persistSessionIfEnabled();
-        }
-        row.remove();
-      });
     }
-   // ===== 新增：用户消息的操作按钮 =====
-    if (role === "user") {
-      const controls = document.createElement("div");
-      controls.className = "row-controls user-controls";
 
+    if (role === "user") {
       const editBtn = document.createElement("button");
       editBtn.className = "mini-btn edit-btn";
       editBtn.textContent = "✏️ 重新编辑";
@@ -206,8 +150,8 @@ function makeRow(role){
 
       controls.appendChild(editBtn);
       controls.appendChild(delBtn);
-
       content.appendChild(controls);
+    }
 
     if (role === "user") {
       row.appendChild(content);
@@ -223,7 +167,7 @@ function makeRow(role){
     return { row, bubble, stats, content };
   }
 
-  function clearUIRows(){
+  function clearUIRows() {
     const nodes = Array.from(chatEl.children);
     for (const n of nodes) {
       if (n === spacerEl) continue;
@@ -231,12 +175,85 @@ function makeRow(role){
     }
   }
 
-  function persistSessionIfEnabled(){
-    if (!historyEnabled) return;
-    try { localStorage.setItem(LS_CHAT_SESSION, JSON.stringify(session)); } catch {}
+  function bindRowButtons(contentEl, index) {
+    if (!contentEl) return;
+    const row = contentEl.closest(".row");
+    if (!row) return;
+
+    const isUserRow = row.classList.contains("user");
+    const buttons = contentEl.querySelectorAll(".mini-btn");
+
+    // 先把之前的监听清空，避免重复
+    buttons.forEach(btn => {
+      btn.onclick = null;
+    });
+
+    if (isUserRow) {
+      const editBtn = contentEl.querySelector(".edit-btn");
+      const delBtn = contentEl.querySelector(".del-btn");
+      if (editBtn) {
+        editBtn.onclick = () => {
+          inputEl.value = session[index]?.content || "";
+          inputEl.style.height = "auto";
+          inputEl.style.height = inputEl.scrollHeight + "px";
+          inputEl.focus();
+        };
+      }
+      if (delBtn) {
+        delBtn.onclick = () => {
+          const toRemove = [index];
+          for (let i = index + 1; i < session.length; i++) {
+            if (session[i]?.role === "user") break;
+            toRemove.push(i);
+          }
+          for (let i = toRemove.length - 1; i >= 0; i--) {
+            session.splice(toRemove[i], 1);
+          }
+          persistSessionIfEnabled();
+          refreshChatUI();
+        };
+      }
+    } else {
+      const regenBtn = contentEl.querySelector(".regen-btn");
+      const delBtn = contentEl.querySelector(".del-btn");
+      if (regenBtn) {
+        regenBtn.onclick = () => {
+          const userIndex = index - 1;
+          if (userIndex < 0 || session[userIndex]?.role !== "user") {
+            alert("无法找到对应的用户消息，无法重新生成。");
+            return;
+          }
+          session.splice(index, 1);
+          persistSessionIfEnabled();
+          refreshChatUI();
+          inputEl.value = session[userIndex].content;
+          send();
+        };
+      }
+      if (delBtn) {
+        delBtn.onclick = () => {
+          session.splice(index, 1);
+          persistSessionIfEnabled();
+          refreshChatUI();
+        };
+      }
+    }
   }
 
-  function restoreSessionIfEnabled(){
+  function refreshChatUI() {
+    clearUIRows();
+    for (let i = 0; i < session.length; i++) {
+      const m = session[i];
+      const r = makeRow(m.role === "user" ? "user" : "assistant");
+      r.bubble.textContent = m.content;
+      r.stats.textContent = "";
+      bindRowButtons(r.content, i);
+    }
+    updateSpacer();
+    scrollToBottom();
+  }
+
+  function restoreSessionIfEnabled() {
     if (!historyEnabled) return;
     const raw = localStorage.getItem(LS_CHAT_SESSION);
     if (!raw) return;
@@ -251,16 +268,11 @@ function makeRow(role){
         session.push({ role: m.role, content: m.content });
       }
 
-      clearUIRows();
-      for (const m of session) {
-        const r = makeRow(m.role === "user" ? "user" : "assistant");
-        r.bubble.textContent = m.content;
-        r.stats.textContent = "";
-      }
+      refreshChatUI();
     } catch {}
   }
 
-  function initModels(){
+  function initModels() {
     modelSel.innerHTML = "";
     for (const m of MODELS) {
       const opt = document.createElement("option");
@@ -277,14 +289,12 @@ function makeRow(role){
     });
   }
 
-  // 😈/😇
   personaToggle.addEventListener("click", () => {
     useBuiltin = !useBuiltin;
     personaToggle.textContent = useBuiltin ? "😈" : "😇";
     localStorage.setItem(LS_USE_BUILTIN, useBuiltin ? "1" : "0");
   });
 
-  // Settings
   settingsBtn.addEventListener("click", () => {
     settingsMask.style.display = "flex";
     historyKeepEl.checked = historyEnabled;
@@ -298,7 +308,6 @@ function makeRow(role){
     if (e.target === settingsMask) settingsMask.style.display = "none";
   });
 
-  // history
   historyKeepEl.addEventListener("change", () => {
     historyEnabled = !!historyKeepEl.checked;
     localStorage.setItem(LS_HISTORY_ENABLED, historyEnabled ? "1" : "0");
@@ -309,12 +318,9 @@ function makeRow(role){
     if (!ok) return;
     localStorage.removeItem(LS_CHAT_SESSION);
     session.length = 0;
-    clearUIRows();
-    updateSpacer();
-    scrollToBottom();
+    refreshChatUI();
   });
 
-  // custom prompt
   promptKeepEl.addEventListener("change", () => {
     promptEnabled = !!promptKeepEl.checked;
     localStorage.setItem(LS_PROMPT_ENABLED, promptEnabled ? "1" : "0");
@@ -333,14 +339,12 @@ function makeRow(role){
     customPromptEl.value = "";
   });
 
-  // donate
-  function openDonate(){ donateMask.style.display = "flex"; }
-  function closeDonate(){ donateMask.style.display = "none"; }
+  function openDonate() { donateMask.style.display = "flex"; }
+  function closeDonate() { donateMask.style.display = "none"; }
   donateBtn.addEventListener("click", openDonate);
   donateClose.addEventListener("click", closeDonate);
   donateMask.addEventListener("click", (e) => { if (e.target === donateMask) closeDonate(); });
 
-  // composer
   inputEl.addEventListener("input", () => {
     inputEl.style.height = "auto";
     inputEl.style.height = inputEl.scrollHeight + "px";
@@ -349,7 +353,7 @@ function makeRow(role){
     if (stick) scrollToBottom();
   });
 
-  function setupResizeObserver(){
+  function setupResizeObserver() {
     if (!composerEl || typeof ResizeObserver === "undefined") return;
     const ro = new ResizeObserver(() => {
       const stick = isNearBottom();
@@ -358,7 +362,7 @@ function makeRow(role){
     });
     ro.observe(composerEl);
   }
-  function setupViewportListener(){
+  function setupViewportListener() {
     if (!window.visualViewport) return;
     window.visualViewport.addEventListener("resize", () => {
       const stick = isNearBottom();
@@ -372,8 +376,7 @@ function makeRow(role){
     if (stick) scrollToBottom();
   });
 
-
-  async function send(){
+  async function send() {
     updateSpacer();
     const text = inputEl.value.trim();
     if (!text) return;
@@ -387,10 +390,11 @@ function makeRow(role){
 
     session.push({ role: "user", content: text });
     persistSessionIfEnabled();
-    // 给这条用户消息的按钮绑定正确的索引
-    if (userRow && userRow.content) {
-    bindUserButtonsByIndex(userRow.content, session.length - 1);
-    }
+
+    // 绑定用户行按钮
+    const userIndex = session.length - 1;
+    bindRowButtons(userRow.content, userIndex);
+
     inputEl.value = "";
     inputEl.style.height = "auto";
     updateSpacer();
@@ -459,8 +463,11 @@ function makeRow(role){
     outEndMs = performance.now();
     session.push({ role: "assistant", content: full });
     persistSessionIfEnabled();
- // 绑定操作按钮到这条 Bot 消息
-    bindBotButtons(aiRow.content, session.length - 1);
+
+    // 绑定 AI 行按钮
+    const aiIndex = session.length - 1;
+    bindRowButtons(aiRow.content, aiIndex);
+
     const seconds = Math.max(0.001, (outEndMs - (outStartMs || outEndMs)) / 1000);
 
     if (exactUsage && typeof exactUsage.completion_tokens === "number") {
@@ -495,49 +502,8 @@ function makeRow(role){
       send();
     }
   });
- // ===== 新增：重新生成 & 删除 =====
-  function removeRowByContent(contentEl){
-    if (!contentEl) return;
-    const row = contentEl.closest(".row");
-    if (row && row.parentNode) row.parentNode.removeChild(row);
-  }
 
-  function regenerateFromBot(botContentEl, botIndex){
-    // 找到这条 Bot 对应的 User 索引（通常是前一条）
-    const userIndex = botIndex - 1;
-    if (userIndex < 0 || session[userIndex]?.role !== "user") {
-      alert("无法找到对应的用户消息，无法重新生成。");
-      return;
-    }
-
-    // 从 session 中移除 Bot 那条
-    session.splice(botIndex, 1);
-    persistSessionIfEnabled();
-
-    // 从页面移除这条 Bot 的 UI
-    removeRowByContent(botContentEl);
-
-    // 重新发送上一条用户消息
-    const userMsg = session[userIndex].content;
-    inputEl.value = userMsg;
-    send();
-  }
-
-  function deleteBot(botContentEl, botIndex){
-    // 从 session 中移除这条 Bot
-    session.splice(botIndex, 1);
-    persistSessionIfEnabled();
-
-    // 从页面移除这条 Bot 的 UI
-    removeRowByContent(botContentEl);
-  }
-
-  function bindBotButtons(contentEl, botIndex){
-    if (!contentEl.__regenBtn || !contentEl.__delBtn) return;
-    contentEl.__regenBtn.addEventListener("click", () => regenerateFromBot(contentEl, botIndex));
-    contentEl.__delBtn.addEventListener("click", () => deleteBot(contentEl, botIndex));
-  }
-  function init(){
+  function init() {
     initModels();
     setupResizeObserver();
     setupViewportListener();
@@ -545,51 +511,6 @@ function makeRow(role){
     restoreSessionIfEnabled();
     scrollToBottom();
   }
-  function bindUserButtonsByIndex(contentEl, index) {
-    if (!contentEl) return;
-    const editBtn = contentEl.querySelector(".edit-btn");
-    const delBtn = contentEl.querySelector(".del-btn");
-    
-    if (editBtn) {
-      editBtn.onclick = () => {
-        inputEl.value = session[index]?.content || "";
-        inputEl.style.height = "auto";
-        inputEl.style.height = inputEl.scrollHeight + "px";
-        inputEl.focus();
-      };
-    }
-    
-    if (delBtn) {
-      delBtn.onclick = () => {
-        // 删除这条用户消息，以及它后面的所有 AI 回复，直到下一条用户消息
-        const toRemove = [index];
-        for (let i = index + 1; i < session.length; i++) {
-          if (session[i]?.role === "user") break;
-          toRemove.push(i);
-        }
-        // 从后往前删，避免索引错位
-        for (let i = toRemove.length - 1; i >= 0; i--) {
-          session.splice(toRemove[i], 1);
-        }
-        persistSessionIfEnabled();
 
-        // 刷新 UI（简单粗暴：清空重绘）
-        clearUIRows();
-        for (const m of session) {
-          const r = makeRow(m.role === "user" ? "user" : "assistant");
-          r.bubble.textContent = m.content;
-          r.stats.textContent = "";
-          // 重新绑定按钮
-          if (m.role === "assistant") {
-            bindButtonsByIndex(r.content, session.indexOf(m));
-          } else {
-            bindUserButtonsByIndex(r.content, session.indexOf(m));
-          }
-        }
-        updateSpacer();
-        scrollToBottom();
-      };
-    }
-  }
   init();
 })();
