@@ -91,7 +91,7 @@
     historyWrap.scrollTo({ top: historyWrap.scrollHeight, behavior: "auto" });
   }
 
-  function makeRow(role){
+function makeRow(role){
     const row = document.createElement("div");
     row.className = "row " + (role === "user" ? "user" : "ai");
 
@@ -136,10 +136,58 @@
 
       content.appendChild(controls);
 
-      // 把 session 数组索引绑定到按钮上
-      // 注意：此时 session 中还没有这条 Bot 消息，所以索引在 send 完成后绑定
-      content.__regenBtn = regenBtn;
-      content.__delBtn = delBtn;
+      // 直接在这里绑定事件，无需额外函数
+      regenBtn.addEventListener("click", () => {
+        // 找到这条 Bot 对应的 User 消息索引
+        const botIndex = session.findIndex((m, idx) => {
+          return m.role === "assistant" && row === chatEl.children[idx];
+        });
+
+        if (botIndex === -1) {
+          // 备选：通过 DOM 查找
+          const allRows = Array.from(chatEl.children).filter(n => n !== spacerEl);
+          const rowIndex = allRows.indexOf(row);
+          if (rowIndex !== -1) {
+            const sessionIndex = rowIndex;
+            const userIndex = sessionIndex - 1;
+            if (userIndex >= 0 && session[userIndex]?.role === "user") {
+              session.splice(sessionIndex, 1);
+              row.remove();
+              persistSessionIfEnabled();
+              const userMsg = session[userIndex].content;
+              inputEl.value = userMsg;
+              send();
+            }
+          }
+          return;
+        }
+
+        const userIndex = botIndex - 1;
+        if (userIndex < 0 || session[userIndex]?.role !== "user") {
+          alert("无法找到对应的用户消息，无法重新生成。");
+          return;
+        }
+
+        session.splice(botIndex, 1);
+        row.remove();
+        persistSessionIfEnabled();
+
+        const userMsg = session[userIndex].content;
+        inputEl.value = userMsg;
+        send();
+      });
+
+      delBtn.addEventListener("click", () => {
+        // 直接根据 DOM 位置删除对应 session 条目
+        const allRows = Array.from(chatEl.children).filter(n => n !== spacerEl);
+        const rowIndex = allRows.indexOf(row);
+
+        if (rowIndex !== -1) {
+          session.splice(rowIndex, 1);
+          persistSessionIfEnabled();
+        }
+        row.remove();
+      });
     }
 
     if (role === "user") {
