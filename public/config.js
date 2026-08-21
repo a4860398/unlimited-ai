@@ -1,6 +1,6 @@
 // public/config.js
 window.APP_MODELS = [
-  { id: "deepseek-ai/deepseek-v4-flash", label: "deepseek-v4-flash (NVIDIA)" },
+  { id: "deepseek-ai/deepseek-v4-flash-0731", label: "deepseek-v4-flash-0731 (NVIDIA)" },
   { id: "deepseek-ai/deepseek-v4-pro", label: "deepseek-v4-pro (NVIDIA)" },
   { id: "stepfun/step-3.7-flash", label: "Step 3.7 Flash (NVIDIA)" },
   { id: "z-ai/glm-5.2", label: "glm-5.2 (NVIDIA)" },
