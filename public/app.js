@@ -423,7 +423,10 @@ function makeRow(role){
 
     session.push({ role: "user", content: text });
     persistSessionIfEnabled();
-
+    // 给这条用户消息的按钮绑定正确的索引
+    if (userRow && userRow.content) {
+    bindUserButtonsByIndex(userRow.content, session.length - 1);
+    }
     inputEl.value = "";
     inputEl.style.height = "auto";
     updateSpacer();
@@ -578,6 +581,51 @@ function makeRow(role){
     restoreSessionIfEnabled();
     scrollToBottom();
   }
+  function bindUserButtonsByIndex(contentEl, index) {
+    if (!contentEl) return;
+    const editBtn = contentEl.querySelector(".edit-btn");
+    const delBtn = contentEl.querySelector(".del-btn");
+    
+    if (editBtn) {
+      editBtn.onclick = () => {
+        inputEl.value = session[index]?.content || "";
+        inputEl.style.height = "auto";
+        inputEl.style.height = inputEl.scrollHeight + "px";
+        inputEl.focus();
+      };
+    }
+    
+    if (delBtn) {
+      delBtn.onclick = () => {
+        // 删除这条用户消息，以及它后面的所有 AI 回复，直到下一条用户消息
+        const toRemove = [index];
+        for (let i = index + 1; i < session.length; i++) {
+          if (session[i]?.role === "user") break;
+          toRemove.push(i);
+        }
+        // 从后往前删，避免索引错位
+        for (let i = toRemove.length - 1; i >= 0; i--) {
+          session.splice(toRemove[i], 1);
+        }
+        persistSessionIfEnabled();
 
+        // 刷新 UI（简单粗暴：清空重绘）
+        clearUIRows();
+        for (const m of session) {
+          const r = makeRow(m.role === "user" ? "user" : "assistant");
+          r.bubble.textContent = m.content;
+          r.stats.textContent = "";
+          // 重新绑定按钮
+          if (m.role === "assistant") {
+            bindButtonsByIndex(r.content, session.indexOf(m));
+          } else {
+            bindUserButtonsByIndex(r.content, session.indexOf(m));
+          }
+        }
+        updateSpacer();
+        scrollToBottom();
+      };
+    }
+  }
   init();
 })();
