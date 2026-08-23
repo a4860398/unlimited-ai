@@ -102,7 +102,7 @@ async function handleChat(request, env) {
 
   // ── 核心改动：非流式获取 → 模拟流式输出 ──
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 180000);
+  const timeoutId = setTimeout(() => controller.abort(), 300000);
 
   const upstream = await fetch(`${baseUrl}/chat/completions`, {
     signal: controller.signal,
