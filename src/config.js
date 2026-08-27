@@ -11,7 +11,7 @@ export const DEFAULT_MODEL = "deepseek-ai/deepseek-v4-flash-0731";
 export const MODELS = [
   // ========== NVIDIA 免费模型 ==========
   { id: "deepseek-ai/deepseek-v4-flash-0731", label: "deepseek-v4-flash-0731 (NVIDIA)", persona: 1, platform: "nvidia" },
-  { id: "deepseek-ai/deepseek-v4-pro", label: "deepseek-v4-pro (NVIDIA)", persona: 1, platform: "nvidia" },
+  { id: "deepseek-ai/deepseek-v4-pro-0813", label: "deepseek-v4-pro-0813 (NVIDIA)", persona: 1, platform: "nvidia" },
   { id: "stepfun-ai/step-3.7-flash", label: "step-3.7-flash(NVIDIA)", persona: 1, platform: "nvidia" },
   { id: "z-ai/glm-5.2", label: "glm-5.2 (NVIDIA)", persona: 1, platform: "nvidia" },
   { id: "minimaxai/minimax-m3", label: "MiniMax-M3 (NVIDIA)", persona: 1, platform: "nvidia" },
