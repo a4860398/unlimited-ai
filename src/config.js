@@ -17,8 +17,9 @@ export const MODELS = [
   { id: "minimaxai/minimax-m3", label: "MiniMax-M3 (NVIDIA)", persona: 1, platform: "nvidia" },
   { id: "google/gemma-4-31b-it", label: "gemma-4-31b-it (NVIDIA)", persona: 1, platform: "nvidia" },
   { id: "thinkingmachines/inkling", label: "Inkling (NVIDIA)", persona: 1, platform: "nvidia" },
-  { id: "moonshotai/kimi-k3", label: "kimi-k3(NVIDIA)", persona: 1, platform: "nvidia" },
-
+  { id: "moonshotai/kimi-k3", label: "kimi-k3(NVIDIA)", persona: 1, platform: "nvidia" }, 
+  { id: "zhipu/glm-5.3", label: "GLM-5.3 (智谱)", persona: 2, platform: "zhipu" },
+  { id: "zhipu/glm-5.3-flash", label: "GLM-5.3 Flash (智谱)", persona: 2, platform: "zhipu" },
   // ========== DeepSeek 官方付费模型 ==========
   { id: "deepseek/deepseek-v4-flash", label: "DeepSeek V4 Flash (付费·官方)", persona: 1, platform: "deepseek" },
   { id: "deepseek/deepseek-v4-pro", label: "DeepSeek V4 Pro (付费·官方)", persona: 1, platform: "deepseek" },
