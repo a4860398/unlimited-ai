@@ -57,10 +57,13 @@ async function handleChat(request, env) {
     ? (model.includes('/') ? model.split('/').slice(1).join('/') : model)
     : model;
 
-  let apiKey, baseUrl;
+let apiKey, baseUrl;
   if (platform === 'deepseek') {
     apiKey = env.DEEPSEEK_API_KEY;
     baseUrl = env.OPENAI_BASE_URL || 'https://api.deepseek.com';
+  } else if (platform === 'zhipu') {
+    apiKey = env.ZHIPU_API_KEY;
+    baseUrl = 'https://open.bigmodel.cn/api/paas/v4';
   } else {
     apiKey = env.NVIDIA_API_KEY;
     baseUrl = 'https://integrate.api.nvidia.com/v1';
