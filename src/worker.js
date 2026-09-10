@@ -53,9 +53,9 @@ async function handleChat(request, env) {
   const model = modelConfig ? requestedModel : DEFAULT_MODEL;
   const platform = modelConfig?.platform || 'nvidia';
 
-  const realModelName = platform === 'deepseek'
-    ? (model.includes('/') ? model.split('/').slice(1).join('/') : model)
-    : model;
+  const realModelName = (platform === 'deepseek' || platform === 'zhipu')
+  ? (model.includes('/') ? model.split('/').slice(1).join('/') : model)
+  : model;
 
 let apiKey, baseUrl;
   if (platform === 'deepseek') {
