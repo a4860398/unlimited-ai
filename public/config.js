@@ -8,6 +8,8 @@ window.APP_MODELS = [
   { id: "google/gemma-4-31b-it", label: "gemma-4-31b-it (NVIDIA)" },
   { id: "thinkingmachines/inkling", label: "Inkling (NVIDIA)" },
   { id: "poolside/laguna-xs-2.1", label: "laguna-xs-2.1(NVIDIA)" },
+  { id: "zhipu/glm-5.3", label: "GLM-5.3 (智谱)" },
+  { id: "zhipu/glm-5.3-flash", label: "GLM-5.3 Flash (智谱)" },
   { id: "deepseek/deepseek-v4-flash", label: "DeepSeek V4 Flash (付费·官方)" },
   { id: "deepseek/deepseek-v4-pro", label: "DeepSeek V4 Pro (付费·官方)" },
 ];
