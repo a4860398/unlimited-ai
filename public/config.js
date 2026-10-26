@@ -4,7 +4,7 @@ window.APP_MODELS = [
   { id: "deepseek-ai/deepseek-v4-pro", label: "deepseek-v4-pro (NVIDIA)" },
   { id: "stepfun-ai/step-3.7-flash", label: "step-3.7-flash(NVIDIA)" },
   { id: "z-ai/glm-5.2", label: "glm-5.2 (NVIDIA)" },
-  { id: "minimaxai/minimax-m3", label: "MiniMax-M3 (NVIDIA)" },
+  { id: "minimaxai/minimax-m3.1-flash", label: "minimax-m3.1-flash (NVIDIA)" },
   { id: "google/gemma-4-31b-it", label: "gemma-4-31b-it (NVIDIA)" },
   { id: "thinkingmachines/inkling", label: "Inkling (NVIDIA)" },
   { id: "poolside/laguna-xs-2.1", label: "laguna-xs-2.1(NVIDIA)" },
